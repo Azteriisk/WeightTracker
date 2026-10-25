@@ -1,0 +1,32 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme -->
+    <style name="Base.Theme.WeightTracker" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="colorPrimary">@color/neon_teal</item>
+        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorSecondary">@color/neon_green</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <item name="android:colorBackground">@color/bg_dark</item>
+        <item name="colorSurface">@color/card_surface</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textColorHint">@color/text_hint</item>
+        <item name="android:windowBackground">@drawable/bg_window_gradient</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="textInputStyle">@style/Widget.WeightTracker.TextInputLayout</item>
+    </style>
+
+    <style name="Theme.WeightTracker" parent="Base.Theme.WeightTracker" />
+
+    <style name="Widget.WeightTracker.TextInputLayout" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="boxBackgroundColor">@color/input_surface</item>
+        <item name="boxStrokeColor">@drawable/color_input_box_stroke</item>
+        <item name="boxCornerRadiusTopStart">14dp</item>
+        <item name="boxCornerRadiusTopEnd">14dp</item>
+        <item name="boxCornerRadiusBottomStart">14dp</item>
+        <item name="boxCornerRadiusBottomEnd">14dp</item>
+        <item name="hintTextColor">@color/neon_teal</item>
+        <item name="android:textColorHint">@color/text_hint</item>
+    </style>
+</resources>

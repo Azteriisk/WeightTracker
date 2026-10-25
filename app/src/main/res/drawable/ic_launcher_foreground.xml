@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+
+    <group
+        android:scaleX="0.75"
+        android:scaleY="0.75"
+        android:pivotX="50"
+        android:pivotY="50">
+
+        <!-- Wide Ambient Glow -->
+        <path
+            android:strokeWidth="10"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round"
+            android:strokeAlpha="0.18"
+            android:pathData="
+                M 26,20 h 48 c 5,0 9,4 9,9 l -2,44 c 0,5 -4,9 -9,9 h -44 c -5,0 -9,-4 -9,-9 l -2,-44 c 0,-5 4,-9 9,-9 z
+                M 35,20 l 3,16 c 0,3 2,5 5,5 h 14 c 3,0 5,-2 5,-5 l 3,-16
+                M 43,26 h 14 v 6 h -14 z
+                M 26,28 v 42 c 0,3 2,5 5,5 h 38 c 3,0 5,-2 5,-5 v -42
+                M 12,44 h 9 M 12,50 h 9 M 12,56 h 9 M 12,62 h 9
+                M 79,44 h 9 M 79,50 h 9 M 79,56 h 9 M 79,62 h 9
+            ">
+            <aapt:attr name="android:strokeColor">
+                <gradient
+                    android:startX="12"
+                    android:startY="18"
+                    android:endX="88"
+                    android:endY="82"
+                    android:type="linear">
+                    <item android:offset="0.0" android:color="#3BA094" />
+                    <item android:offset="1.0" android:color="#68A25D" />
+                </gradient>
+            </aapt:attr>
+        </path>
+
+        <!-- Thin Crisp Main Scale Outline -->
+        <path
+            android:strokeWidth="2.0"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round"
+            android:strokeAlpha="0.95"
+            android:pathData="
+                M 26,20 h 48 c 5,0 9,4 9,9 l -2,44 c 0,5 -4,9 -9,9 h -44 c -5,0 -9,-4 -9,-9 l -2,-44 c 0,-5 4,-9 9,-9 z
+                M 35,20 l 3,16 c 0,3 2,5 5,5 h 14 c 3,0 5,-2 5,-5 l 3,-16
+                M 43,26 h 14 v 6 h -14 z
+                M 26,28 v 42 c 0,3 2,5 5,5 h 38 c 3,0 5,-2 5,-5 v -42
+                M 12,44 h 9 M 12,50 h 9 M 12,56 h 9 M 12,62 h 9
+                M 79,44 h 9 M 79,50 h 9 M 79,56 h 9 M 79,62 h 9
+            ">
+            <aapt:attr name="android:strokeColor">
+                <gradient
+                    android:startX="12"
+                    android:startY="18"
+                    android:endX="88"
+                    android:endY="82"
+                    android:type="linear">
+                    <item android:offset="0.0" android:color="#4CAEBF" />
+                    <item android:offset="1.0" android:color="#78B36E" />
+                </gradient>
+            </aapt:attr>
+        </path>
+    </group>
+</vector>

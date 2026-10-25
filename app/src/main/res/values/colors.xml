@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Background and surface colors -->
+    <color name="bg_dark">#181A1D</color>
+    <color name="bg_dark_gradient_start">#2C2F34</color>
+    <color name="bg_dark_gradient_center">#202226</color>
+    <color name="bg_dark_gradient_end">#151618</color>
+
+    <color name="vibe_bg">#181A1D</color>
+    <color name="vibe_surface">#22252A</color>
+    <color name="card_surface">#22252A</color>
+    <color name="input_surface">#1C1E23</color>
+    <color name="card_stroke">#2B3E9C91</color>
+
+    <!-- Accent colors -->
+    <color name="neon_teal">#3E9C91</color>
+    <color name="neon_teal_bright">#54BBB0</color>
+    <color name="neon_green">#62A35A</color>
+    <color name="neon_green_bright">#79C370</color>
+    <color name="glow_ambient">#253E9C91</color>
+
+    <!-- Text colors -->
+    <color name="text_primary">#E2E8F0</color>
+    <color name="text_secondary">#8C9BAE</color>
+    <color name="text_hint">#525F70</color>
+
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+</resources>
