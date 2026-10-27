@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - WeightTracker</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent: #14b8a6;
+            --accent-glow: rgba(20, 184, 166, 0.2);
+            --border-color: #334155;
+        }
+
+        @media (prefers-color-scheme: light) {
+            :root {
+                --bg-color: #f8fafc;
+                --card-bg: #ffffff;
+                --text-primary: #0f172a;
+                --text-secondary: #475569;
+                --accent: #0d9488;
+                --accent-glow: rgba(13, 148, 136, 0.15);
+                --border-color: #e2e8f0;
+            }
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 2rem 1rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+        }
+
+        header {
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            margin: 0 0 0.5rem 0;
+            color: var(--accent);
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .effective-date {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        h2 {
+            font-size: 1.35rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.35rem;
+        }
+
+        p, li {
+            color: var(--text-secondary);
+            margin: 0.5rem 0;
+        }
+
+        ul {
+            padding-left: 1.5rem;
+        }
+
+        strong {
+            color: var(--text-primary);
+        }
+
+        a {
+            color: var(--accent);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .highlight-box {
+            background-color: var(--accent-glow);
+            border-left: 4px solid var(--accent);
+            padding: 1rem 1.25rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        .highlight-box p {
+            color: var(--text-primary);
+            margin: 0;
+            font-weight: 500;
+        }
+
+        footer {
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>WeightTracker Privacy Policy</h1>
+            <p class="effective-date"><strong>Effective Date:</strong> October 26, 2026</p>
+        </header>
+
+        <section>
+            <div class="highlight-box">
+                <p>WeightTracker is committed to user privacy. All personal weight logs, target milestones, and user credentials remain strictly on your device in a local SQLite database and are never transmitted to our own servers or cloud databases.</p>
+            </div>
+
+            <h2>1. Overview</h2>
+            <p>This Privacy Policy explains how <strong>WeightTracker</strong> ("we", "our", or "the app"), developed by <strong>Alec Brandt</strong>, handles user information when you use our mobile application on Android devices. We believe your health and weight records belong solely to you, which is why the core application functions completely offline on your device.</p>
+
+            <h2>2. Information We Collect and Store</h2>
+            <p><strong>Locally Stored Data (On-Device Only):</strong></p>
+            <ul>
+                <li><strong>Weight & Milestone Logs:</strong> Daily body weight entries, dates of measurement, and target goal weights.</li>
+                <li><strong>Account Credentials:</strong> User account identifiers and locally stored passwords used to separate multiple user profiles on the same device.</li>
+            </ul>
+            <p>All of this data is stored strictly in your device's internal SQLite database sandbox. We do not operate external accounts, and we do not transmit, sync, or sell your health records to any external cloud database or third party.</p>
+
+            <h2>3. Third-Party Services and Analytics</h2>
+            <p>To support the continued development and maintenance of the application, WeightTracker utilizes third-party advertising services:</p>
+            <ul>
+                <li><strong>Google AdMob (Google LLC):</strong> We display non-intrusive banner advertisements provided by Google Mobile Ads SDK (AdMob). In order to serve relevant ads, Google AdMob may automatically collect pseudonymous device information, including:
+                    <ul>
+                        <li>Google Advertising ID (AAID)</li>
+                        <li>Coarse location data derived from IP address</li>
+                        <li>Device hardware specifications and operating system version</li>
+                        <li>Ad interaction and diagnostic performance logs</li>
+                    </ul>
+                    For more details on how Google processes and protects advertising data, please review Google's Privacy & Terms: <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">https://policies.google.com/privacy</a>.
+                </li>
+            </ul>
+
+            <h2>4. Permissions Used by the App</h2>
+            <p>WeightTracker requests only the minimal permissions necessary to function:</p>
+            <ul>
+                <li><strong>INTERNET:</strong> Required to connect to the Google Mobile Ads network to retrieve and display banner advertisements.</li>
+                <li><strong>POST_NOTIFICATIONS:</strong> Used on Android 13 (API 33) and higher to deliver optional on-device milestone alerts and congratulatory reminders when reaching your target weight. This notification runs entirely on your local device.</li>
+            </ul>
+
+            <h2>5. Data Retention, Control, and Deletion</h2>
+            <p>Because your weight and login data resides solely on your physical device, you maintain full control over your data at all times:</p>
+            <ul>
+                <li><strong>Editing & Deleting Entries:</strong> You can edit or remove individual weight records directly from the history dashboard within the app.</li>
+                <li><strong>Full Data Erasure:</strong> You can permanently wipe all local data and credentials at any time by navigating to your Android device settings (<strong>Settings &gt; Apps &gt; WeightTracker &gt; Storage &gt; Clear Data</strong>) or by uninstalling the application.</li>
+            </ul>
+
+            <h2>6. Children's Privacy</h2>
+            <p>WeightTracker is not targeted at children under the age of 13. We do not knowingly collect personal identifiable information from children.</p>
+
+            <h2>7. Security</h2>
+            <p>We prioritize the security of your data by keeping it contained within the secure, sandboxed application directory of your Android device. Only the WeightTracker application on your device can access your local SQLite records.</p>
+
+            <h2>8. Changes to This Privacy Policy</h2>
+            <p>We may update this Privacy Policy from time to time to reflect changes in our practices or applicable platform regulations. Any revisions will be reflected on this page with an updated "Effective Date."</p>
+
+            <h2>9. Contact Us</h2>
+            <p>If you have any questions, feedback, or concerns regarding this Privacy Policy or your data, please contact the developer:</p>
+            <p>
+                <strong>Developer:</strong> Alec Brandt<br>
+                <strong>Email:</strong> <a href="mailto:abrandt0208@gmail.com">abrandt0208@gmail.com</a>
+            </p>
+        </section>
+
+        <footer>
+            <p>&copy; 2026 Alec Brandt. All rights reserved. WeightTracker.</p>
+        </footer>
+    </div>
+</body>
+</html>
