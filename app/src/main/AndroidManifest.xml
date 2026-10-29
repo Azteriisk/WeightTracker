@@ -32,7 +32,7 @@
 
         <activity android:name=".WeightListActivity" />
         <activity android:name=".AddWeightActivity" />
-        <activity android:name=".SmsActivity" />
+        <activity android:name=".SettingsActivity" />
 
         <receiver
             android:name=".ReminderReceiver"

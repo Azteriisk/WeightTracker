@@ -23,7 +23,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Locale;
 
-public class SmsActivity extends AppCompatActivity {
+public class SettingsActivity extends AppCompatActivity {
     private TextView textStatus;
     private EditText editTargetWeight;
     private EditText editUserHeight;
@@ -59,7 +59,7 @@ public class SmsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         GlowUtils.enableEdgeToEdge(this);
-        setContentView(R.layout.activity_sms);
+        setContentView(R.layout.activity_settings);
         
         // Apply gradient and shadow styling to title text
         GlowUtils.applyNeonGlow(findViewById(R.id.textTitle));
@@ -220,7 +220,7 @@ public class SmsActivity extends AppCompatActivity {
             }
             Toast.makeText(this, "Imported " + count + " entries successfully!", Toast.LENGTH_LONG).show();
         } catch (Exception e) {
-            Toast.makeText(this, "Import failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Export failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 

@@ -1,17 +1,14 @@
 package net.azterisk.weighttracker;
 
 import android.app.DatePickerDialog;
-import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.telephony.SmsManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
+
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -53,34 +50,37 @@ public class AddWeightActivity extends AppCompatActivity {
             int month = c.get(Calendar.MONTH);
             int day = c.get(Calendar.DAY_OF_MONTH);
 
-            DatePickerDialog datePickerDialog = new DatePickerDialog(
-                    AddWeightActivity.this,
-                    (view, selectedYear, selectedMonth, selectedDay) -> {
-                        // Month is 0-based, so add 1
-                        String date = String.format(Locale.US, "%02d/%02d/%04d", selectedMonth + 1, selectedDay, selectedYear);
-                        editDate.setText(date);
-                    },
-                    year, month, day);
+            DatePickerDialog datePickerDialog = new DatePickerDialog(AddWeightActivity.this,
+                    (view, year1, monthOfYear, dayOfMonth) -> {
+                        String formattedDate = String.format(Locale.US, "%02d/%02d/%04d", monthOfYear + 1, dayOfMonth, year1);
+                        editDate.setText(formattedDate);
+                    }, year, month, day);
             datePickerDialog.show();
         });
 
+        // Check if editing an existing entry
         Intent intent = getIntent();
-        if (intent != null && intent.hasExtra("entryId")) {
+        if (intent.hasExtra("entryId")) {
             entryId = intent.getLongExtra("entryId", -1);
-            editDate.setText(intent.getStringExtra("date"));
-            editWeight.setText(String.format(Locale.US, "%.1f", intent.getDoubleExtra("weight", 0.0)));
-        }
+            String existingDate = intent.getStringExtra("date");
+            double existingWeight = intent.getDoubleExtra("weight", 0);
 
-        boolean isMetric = prefs.getBoolean(MainActivity.KEY_USE_METRIC, false);
-        if (isMetric) {
-            editWeight.setHint(R.string.weight_kg);
+            editDate.setText(existingDate);
+            editWeight.setText(String.format(Locale.US, "%.1f", existingWeight));
+            btnSave.setText(R.string.save);
         } else {
-            editWeight.setHint(R.string.weight_lbs);
+            // Default to today's date for a new entry
+            final Calendar c = Calendar.getInstance();
+            String today = String.format(Locale.US, "%02d/%02d/%04d",
+                    c.get(Calendar.MONTH) + 1,
+                    c.get(Calendar.DAY_OF_MONTH),
+                    c.get(Calendar.YEAR));
+            editDate.setText(today);
         }
 
         btnSave.setOnClickListener(v -> saveWeightEntry());
     }
-    
+
     private void saveWeightEntry() {
         String date = editDate.getText().toString().trim();
         String weightStr = editWeight.getText().toString().trim();
@@ -106,7 +106,7 @@ public class AddWeightActivity extends AppCompatActivity {
                 success = dbHelper.addWeight(currentUserId, date, weight);
                 if (success) {
                     Toast.makeText(this, "Weight added successfully", Toast.LENGTH_SHORT).show();
-                    checkGoalAndSendSms(weight);
+                    checkGoalAndSendNotification(weight);
                 } else {
                     Toast.makeText(this, "Failed to add weight", Toast.LENGTH_SHORT).show();
                 }
@@ -114,7 +114,7 @@ public class AddWeightActivity extends AppCompatActivity {
                 success = dbHelper.updateWeight(entryId, date, weight);
                 if (success) {
                     Toast.makeText(this, "Weight updated successfully", Toast.LENGTH_SHORT).show();
-                    checkGoalAndSendSms(weight);
+                    checkGoalAndSendNotification(weight);
                 } else {
                     Toast.makeText(this, "Failed to update weight", Toast.LENGTH_SHORT).show();
                 }
@@ -129,9 +129,9 @@ public class AddWeightActivity extends AppCompatActivity {
         }
     }
     
-    private void checkGoalAndSendSms(double currentWeight) {
+    private void checkGoalAndSendNotification(double currentWeight) {
         SharedPreferences prefs = getSharedPreferences(MainActivity.PREF_NAME, MODE_PRIVATE);
-        float targetWeight = prefs.getFloat(SmsActivity.KEY_TARGET_WEIGHT, -1f);
+        float targetWeight = prefs.getFloat(SettingsActivity.KEY_TARGET_WEIGHT, -1f);
         
         if (targetWeight != -1f && currentWeight <= targetWeight) {
             String message = "Congratulations! You have reached your target weight of " + String.format(Locale.US, "%.1f", targetWeight) + " lbs!";

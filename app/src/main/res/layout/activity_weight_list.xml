@@ -57,7 +57,7 @@
                 android:layout_height="48dp"
                 android:src="@drawable/ic_settings"
                 android:background="@drawable/bg_button_secondary"
-                android:contentDescription="@string/sms_settings"
+                android:contentDescription="@string/settings"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent" />

@@ -88,7 +88,7 @@ public class WeightListActivity extends AppCompatActivity {
         ImageButton btnSettings = findViewById(R.id.btnSettings);
 
         btnAdd.setOnClickListener(v -> startActivity(new Intent(WeightListActivity.this, AddWeightActivity.class)));
-        btnSettings.setOnClickListener(v -> startActivity(new Intent(WeightListActivity.this, SmsActivity.class)));
+        btnSettings.setOnClickListener(v -> startActivity(new Intent(WeightListActivity.this, SettingsActivity.class)));
     }
 
     private void updateAdVisibility(boolean isPremium) {
@@ -163,7 +163,7 @@ public class WeightListActivity extends AppCompatActivity {
         }
 
         // Target weight from settings
-        float targetFloat = prefs.getFloat(SmsActivity.KEY_TARGET_WEIGHT, -1f);
+        float targetFloat = prefs.getFloat(SettingsActivity.KEY_TARGET_WEIGHT, -1f);
         Double targetVal = null;
         if (targetFloat > 0) {
             targetVal = isMetric ? (targetFloat * 0.453592) : (double) targetFloat;
@@ -219,7 +219,7 @@ public class WeightListActivity extends AppCompatActivity {
         }
 
         // Local BMI Calculation if Height is set (Stored in inches internally)
-        float userHeightInches = prefs.getFloat(SmsActivity.KEY_USER_HEIGHT, -1f);
+        float userHeightInches = prefs.getFloat(SettingsActivity.KEY_USER_HEIGHT, -1f);
         if (textBmi != null) {
             if (userHeightInches > 0 && currentWeight > 0) {
                 double weightInLbs = isMetric ? (currentWeight / 0.453592) : currentWeight;
