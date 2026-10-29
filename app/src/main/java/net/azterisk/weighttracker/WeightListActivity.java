@@ -18,9 +18,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -37,6 +35,7 @@ public class WeightListActivity extends AppCompatActivity {
     private TextView textCurrentWeight;
     private TextView textTargetWeight;
     private TextView textTotalChange;
+    private TextView textBmi;
     private TextView textPaceEta;
     private ProgressBar progressGoal;
     private WeightChartView chartWeight;
@@ -69,6 +68,7 @@ public class WeightListActivity extends AppCompatActivity {
         textCurrentWeight = findViewById(R.id.textCurrentWeight);
         textTargetWeight = findViewById(R.id.textTargetWeight);
         textTotalChange = findViewById(R.id.textTotalChange);
+        textBmi = findViewById(R.id.textBmi);
         textPaceEta = findViewById(R.id.textPaceEta);
         progressGoal = findViewById(R.id.progressGoal);
         chartWeight = findViewById(R.id.chartWeight);
@@ -163,13 +163,10 @@ public class WeightListActivity extends AppCompatActivity {
         }
 
         // Target weight from settings
-        String targetStr = prefs.getString(SmsActivity.KEY_TARGET_WEIGHT, "");
+        float targetFloat = prefs.getFloat(SmsActivity.KEY_TARGET_WEIGHT, -1f);
         Double targetVal = null;
-        if (!targetStr.isEmpty()) {
-            try {
-                double rawTarget = Double.parseDouble(targetStr);
-                targetVal = isMetric ? (rawTarget * 0.453592) : rawTarget;
-            } catch (Exception ignored) {}
+        if (targetFloat > 0) {
+            targetVal = isMetric ? (targetFloat * 0.453592) : (double) targetFloat;
         }
 
         // Update Journey Summary card
@@ -219,6 +216,20 @@ public class WeightListActivity extends AppCompatActivity {
         } else {
             textTotalChange.setText(String.format(Locale.US, "📈 +%.1f %s (+%.1f%%)", totalDiff, unit, percentDiff));
             textTotalChange.setTextColor(Color.parseColor("#FFD166")); // Amber
+        }
+
+        // Local BMI Calculation if Height is set (Stored in inches internally)
+        float userHeightInches = prefs.getFloat(SmsActivity.KEY_USER_HEIGHT, -1f);
+        if (textBmi != null) {
+            if (userHeightInches > 0 && currentWeight > 0) {
+                double weightInLbs = isMetric ? (currentWeight / 0.453592) : currentWeight;
+                double bmi = (703.0 * weightInLbs) / Math.pow(userHeightInches, 2);
+                String category = (bmi < 18.5) ? "Under" : ((bmi < 25.0) ? "Normal" : ((bmi < 30.0) ? "Over" : "Obese"));
+                textBmi.setText(String.format(Locale.US, "BMI: %.1f (%s)", bmi, category));
+                textBmi.setVisibility(View.VISIBLE);
+            } else {
+                textBmi.setVisibility(View.GONE);
+            }
         }
 
         // Pass to chart

@@ -14,6 +14,8 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 
+import com.google.android.material.textfield.TextInputLayout;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -24,6 +26,8 @@ import java.util.Locale;
 public class SmsActivity extends AppCompatActivity {
     private TextView textStatus;
     private EditText editTargetWeight;
+    private EditText editUserHeight;
+    private TextInputLayout layoutUserHeight;
     private SwitchCompat switchMetric;
     private SwitchCompat switchDailyReminder;
     private Button btnRemoveAds;
@@ -34,6 +38,7 @@ public class SmsActivity extends AppCompatActivity {
     private long currentUserId = -1;
     
     public static final String KEY_TARGET_WEIGHT = "targetWeight";
+    public static final String KEY_USER_HEIGHT = "userHeight";
     public static final String KEY_DAILY_REMINDER = "dailyReminderEnabled";
 
     private final ActivityResultLauncher<String> createDocumentLauncher =
@@ -69,6 +74,8 @@ public class SmsActivity extends AppCompatActivity {
         btnImportCsv = findViewById(R.id.btnImportCsv);
         textStatus = findViewById(R.id.textStatus);
         editTargetWeight = findViewById(R.id.editTargetWeight);
+        editUserHeight = findViewById(R.id.editUserHeight);
+        layoutUserHeight = findViewById(R.id.layoutUserHeight);
         switchMetric = findViewById(R.id.switchMetric);
         switchDailyReminder = findViewById(R.id.switchDailyReminder);
         
@@ -78,11 +85,11 @@ public class SmsActivity extends AppCompatActivity {
         // Handle Metric Switch
         boolean isMetric = prefs.getBoolean(MainActivity.KEY_USE_METRIC, false);
         switchMetric.setChecked(isMetric);
-        updateHint(isMetric);
+        updateHints(isMetric);
         
         switchMetric.setOnCheckedChangeListener((buttonView, isChecked) -> {
             prefs.edit().putBoolean(MainActivity.KEY_USE_METRIC, isChecked).apply();
-            updateHint(isChecked);
+            updateHints(isChecked);
         });
 
         // Handle Daily Reminder Switch
@@ -104,25 +111,48 @@ public class SmsActivity extends AppCompatActivity {
                 editTargetWeight.setText(String.format(Locale.US, "%.1f", savedTarget));
             }
         }
+
+        // Handle Height (stored in inches internally)
+        float savedHeight = prefs.getFloat(KEY_USER_HEIGHT, -1f);
+        if (savedHeight != -1f) {
+            if (isMetric) {
+                editUserHeight.setText(String.format(Locale.US, "%.1f", savedHeight * 2.54));
+            } else {
+                editUserHeight.setText(String.format(Locale.US, "%.1f", savedHeight));
+            }
+        }
         
         btnSaveTarget.setOnClickListener(v -> {
             String targetStr = editTargetWeight.getText().toString().trim();
+            String heightStr = editUserHeight.getText().toString().trim();
+
+            SharedPreferences.Editor editor = prefs.edit();
+
             if (!targetStr.isEmpty()) {
                 try {
                     float target = Float.parseFloat(targetStr);
-                    // Always store as lbs internally
                     if (switchMetric.isChecked()) {
                         target = (float) (target / 0.453592);
                     }
-                    prefs.edit().putFloat(KEY_TARGET_WEIGHT, target).apply();
-                    Toast.makeText(this, "Target Weight Saved", Toast.LENGTH_SHORT).show();
-                } catch (NumberFormatException e) {
-                    Toast.makeText(this, "Invalid weight format", Toast.LENGTH_SHORT).show();
-                }
+                    editor.putFloat(KEY_TARGET_WEIGHT, target);
+                } catch (NumberFormatException ignored) {}
             }
+
+            if (!heightStr.isEmpty()) {
+                try {
+                    float height = Float.parseFloat(heightStr);
+                    if (switchMetric.isChecked()) {
+                        height = (float) (height / 2.54);
+                    }
+                    editor.putFloat(KEY_USER_HEIGHT, height);
+                } catch (NumberFormatException ignored) {}
+            }
+
+            editor.apply();
+            Toast.makeText(this, "Profile & Goals Saved", Toast.LENGTH_SHORT).show();
         });
 
-        // CSV Export & Import Handlers (Zero Permissions Required)
+        // CSV Export & Import Handlers (Zero Permissions Required via SAF)
         btnExportCsv.setOnClickListener(v -> {
             String filename = "weight_tracker_backup_" + System.currentTimeMillis() + ".csv";
             createDocumentLauncher.launch(filename);
@@ -206,11 +236,17 @@ public class SmsActivity extends AppCompatActivity {
         }
     }
 
-    private void updateHint(boolean isMetric) {
+    private void updateHints(boolean isMetric) {
         if (isMetric) {
             editTargetWeight.setHint(R.string.target_weight_hint_kg);
+            if (layoutUserHeight != null) {
+                layoutUserHeight.setHint("Height (cm for BMI)");
+            }
         } else {
             editTargetWeight.setHint(R.string.target_weight_hint);
+            if (layoutUserHeight != null) {
+                layoutUserHeight.setHint("Height (inches for BMI)");
+            }
         }
     }
 }

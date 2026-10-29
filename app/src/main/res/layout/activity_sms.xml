@@ -104,7 +104,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:hint="@string/target_weight_hint"
-                android:layout_marginBottom="16dp"
+                android:layout_marginBottom="14dp"
                 app:layout_constraintWidth_max="488dp"
                 app:layout_constraintWidth_percent="1.0"
                 app:layout_constraintTop_toBottomOf="@id/cardReminder"
@@ -120,11 +120,34 @@
                     android:importantForAutofill="no" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!-- Optional Height Input for BMI -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/layoutUserHeight"
+                style="@style/Widget.WeightTracker.TextInputLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="Height (inches for BMI)"
+                android:layout_marginBottom="16dp"
+                app:layout_constraintWidth_max="488dp"
+                app:layout_constraintWidth_percent="1.0"
+                app:layout_constraintTop_toBottomOf="@id/layoutTargetWeight"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editUserHeight"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_primary"
+                    android:inputType="numberDecimal"
+                    android:importantForAutofill="no" />
+            </com.google.android.material.textfield.TextInputLayout>
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSaveTarget"
                 android:layout_width="0dp"
                 android:layout_height="52dp"
-                android:text="@string/save_target_weight"
+                android:text="Save Goals &amp; Profile"
                 android:textColor="#0E1114"
                 android:textSize="15sp"
                 android:textStyle="bold"
@@ -133,7 +156,7 @@
                 android:layout_marginBottom="24dp"
                 app:layout_constraintWidth_max="320dp"
                 app:layout_constraintWidth_percent="1.0"
-                app:layout_constraintTop_toBottomOf="@id/layoutTargetWeight"
+                app:layout_constraintTop_toBottomOf="@id/layoutUserHeight"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
