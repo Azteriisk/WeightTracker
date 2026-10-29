@@ -1,26 +1,54 @@
 package net.azterisk.weighttracker;
 
-import android.Manifest;
+import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-import androidx.annotation.NonNull;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.util.Locale;
 
 public class SmsActivity extends AppCompatActivity {
     private TextView textStatus;
     private EditText editTargetWeight;
     private SwitchCompat switchMetric;
-    private static final int SMS_PERMISSION_CODE = 100;
+    private SwitchCompat switchDailyReminder;
+    private Button btnRemoveAds;
+    private Button btnExportCsv;
+    private Button btnImportCsv;
+    private BillingManager billingManager;
+    private DatabaseHelper dbHelper;
+    private long currentUserId = -1;
     
     public static final String KEY_TARGET_WEIGHT = "targetWeight";
+    public static final String KEY_DAILY_REMINDER = "dailyReminderEnabled";
+
+    private final ActivityResultLauncher<String> createDocumentLauncher =
+            registerForActivityResult(new ActivityResultContracts.CreateDocument("text/csv"), uri -> {
+                if (uri != null) {
+                    exportCsvToUri(uri);
+                }
+            });
+
+    private final ActivityResultLauncher<String[]> openDocumentLauncher =
+            registerForActivityResult(new ActivityResultContracts.OpenDocument(), uri -> {
+                if (uri != null) {
+                    importCsvFromUri(uri);
+                }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,17 +56,25 @@ public class SmsActivity extends AppCompatActivity {
         GlowUtils.enableEdgeToEdge(this);
         setContentView(R.layout.activity_sms);
         
-        // Apply neon gradient & glow to title text
+        // Apply gradient and shadow styling to title text
         GlowUtils.applyNeonGlow(findViewById(R.id.textTitle));
 
-        Button btnEnableSms = findViewById(R.id.btnEnableSms);
+        dbHelper = new DatabaseHelper(this);
+        SharedPreferences prefs = getSharedPreferences(MainActivity.PREF_NAME, MODE_PRIVATE);
+        currentUserId = prefs.getLong(MainActivity.KEY_USER_ID, -1);
+
         Button btnSaveTarget = findViewById(R.id.btnSaveTarget);
+        btnRemoveAds = findViewById(R.id.btnRemoveAds);
+        btnExportCsv = findViewById(R.id.btnExportCsv);
+        btnImportCsv = findViewById(R.id.btnImportCsv);
         textStatus = findViewById(R.id.textStatus);
         editTargetWeight = findViewById(R.id.editTargetWeight);
         switchMetric = findViewById(R.id.switchMetric);
+        switchDailyReminder = findViewById(R.id.switchDailyReminder);
         
-        SharedPreferences prefs = getSharedPreferences(MainActivity.PREF_NAME, MODE_PRIVATE);
-        
+        billingManager = new BillingManager(this, this::updatePremiumUI);
+        updatePremiumUI(billingManager.isPremiumUser());
+
         // Handle Metric Switch
         boolean isMetric = prefs.getBoolean(MainActivity.KEY_USE_METRIC, false);
         switchMetric.setChecked(isMetric);
@@ -49,14 +85,23 @@ public class SmsActivity extends AppCompatActivity {
             updateHint(isChecked);
         });
 
+        // Handle Daily Reminder Switch
+        boolean reminderEnabled = prefs.getBoolean(KEY_DAILY_REMINDER, false);
+        switchDailyReminder.setChecked(reminderEnabled);
+        switchDailyReminder.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            prefs.edit().putBoolean(KEY_DAILY_REMINDER, isChecked).apply();
+            NotificationHelper.scheduleDailyReminder(this, isChecked);
+            String msg = isChecked ? "Morning weigh-in reminder set for 8:00 AM" : "Daily reminder turned off";
+            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+        });
+
         // Handle Target Weight
         float savedTarget = prefs.getFloat(KEY_TARGET_WEIGHT, -1f);
         if (savedTarget != -1f) {
-            // Display appropriately based on metric setting
             if (isMetric) {
-                editTargetWeight.setText(String.format(java.util.Locale.US, "%.1f", savedTarget * 0.453592));
+                editTargetWeight.setText(String.format(Locale.US, "%.1f", savedTarget * 0.453592));
             } else {
-                editTargetWeight.setText(String.format(java.util.Locale.US, "%.1f", savedTarget));
+                editTargetWeight.setText(String.format(Locale.US, "%.1f", savedTarget));
             }
         }
         
@@ -77,12 +122,87 @@ public class SmsActivity extends AppCompatActivity {
             }
         });
 
-        btnEnableSms.setOnClickListener(v -> checkSmsPermission());
-        
-        // Update status text based on current permission
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) 
-                == PackageManager.PERMISSION_GRANTED) {
-            textStatus.setText("Status: SMS Notifications Enabled.");
+        // CSV Export & Import Handlers (Zero Permissions Required)
+        btnExportCsv.setOnClickListener(v -> {
+            String filename = "weight_tracker_backup_" + System.currentTimeMillis() + ".csv";
+            createDocumentLauncher.launch(filename);
+        });
+
+        btnImportCsv.setOnClickListener(v -> openDocumentLauncher.launch(new String[]{"text/csv", "text/comma-separated-values", "text/*"}));
+
+        btnRemoveAds.setOnClickListener(v -> billingManager.purchaseRemoveAds(this));
+    }
+
+    private void exportCsvToUri(Uri uri) {
+        if (currentUserId == -1) return;
+
+        try (OutputStream os = getContentResolver().openOutputStream(uri);
+             PrintWriter writer = new PrintWriter(os)) {
+            
+            writer.println("Date,Weight(lbs)");
+            Cursor cursor = dbHelper.getWeightsForUser(currentUserId);
+            int count = 0;
+            if (cursor.moveToFirst()) {
+                do {
+                    String date = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WEIGHT_DATE));
+                    double weight = cursor.getDouble(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_WEIGHT_VALUE));
+                    writer.println(String.format(Locale.US, "%s,%.2f", date, weight));
+                    count++;
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+            Toast.makeText(this, "Exported " + count + " entries successfully!", Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            Toast.makeText(this, "Export failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void importCsvFromUri(Uri uri) {
+        if (currentUserId == -1) return;
+
+        try (InputStream is = getContentResolver().openInputStream(uri);
+             BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
+            
+            String line;
+            int count = 0;
+            boolean isHeader = true;
+
+            while ((line = reader.readLine()) != null) {
+                line = line.trim();
+                if (line.isEmpty()) continue;
+
+                if (isHeader) {
+                    isHeader = false;
+                    if (line.toLowerCase().contains("date") || line.toLowerCase().contains("weight")) {
+                        continue;
+                    }
+                }
+
+                String[] parts = line.split(",");
+                if (parts.length >= 2) {
+                    String date = parts[0].trim();
+                    try {
+                        double weight = Double.parseDouble(parts[1].trim());
+                        dbHelper.addWeight(currentUserId, date, weight);
+                        count++;
+                    } catch (NumberFormatException ignored) {}
+                }
+            }
+            Toast.makeText(this, "Imported " + count + " entries successfully!", Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            Toast.makeText(this, "Import failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void updatePremiumUI(boolean isPremium) {
+        if (btnRemoveAds != null) {
+            if (isPremium) {
+                btnRemoveAds.setText(R.string.remove_ads_unlocked);
+                btnRemoveAds.setEnabled(false);
+            } else {
+                btnRemoveAds.setText(R.string.remove_ads);
+                btnRemoveAds.setEnabled(true);
+            }
         }
     }
 
@@ -91,31 +211,6 @@ public class SmsActivity extends AppCompatActivity {
             editTargetWeight.setHint(R.string.target_weight_hint_kg);
         } else {
             editTargetWeight.setHint(R.string.target_weight_hint);
-        }
-    }
-
-    private void checkSmsPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) 
-                == PackageManager.PERMISSION_GRANTED) {
-            textStatus.setText("Status: Permission Already Granted. SMS Notifications Enabled.");
-            Toast.makeText(this, "SMS Permission is already granted.", Toast.LENGTH_SHORT).show();
-        } else {
-            ActivityCompat.requestPermissions(this, 
-                    new String[]{Manifest.permission.SEND_SMS}, SMS_PERMISSION_CODE);
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == SMS_PERMISSION_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                textStatus.setText("Status: Permission Granted. SMS Notifications Enabled.");
-                Toast.makeText(this, "SMS Permission Granted", Toast.LENGTH_SHORT).show();
-            } else {
-                textStatus.setText("Status: Permission Denied. SMS Notifications Disabled.");
-                Toast.makeText(this, "SMS Permission Denied", Toast.LENGTH_SHORT).show();
-            }
         }
     }
 }

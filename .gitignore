@@ -13,3 +13,10 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Security & Keystore
+keystore
+*.jks
+*.keystore
+app/release/
+.idea/

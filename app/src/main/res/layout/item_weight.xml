@@ -12,14 +12,28 @@
     android:gravity="center_vertical"
     android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/textDate"
+    <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:textColor="@color/text_primary"
-        android:textSize="15sp"
-        android:text="10/01/2026" />
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_primary"
+            android:textSize="15sp"
+            android:text="10/01/2026" />
+
+        <TextView
+            android:id="@+id/textTrend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#8E9AA8"
+            android:textSize="11sp"
+            android:text="Trend: --" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/textWeight"

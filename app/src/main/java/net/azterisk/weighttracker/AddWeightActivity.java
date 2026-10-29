@@ -133,34 +133,9 @@ public class AddWeightActivity extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences(MainActivity.PREF_NAME, MODE_PRIVATE);
         float targetWeight = prefs.getFloat(SmsActivity.KEY_TARGET_WEIGHT, -1f);
         
-        // Send SMS if current weight is less than or equal to target weight.
-        // We assume the user has a weight loss goal for simplicity.
         if (targetWeight != -1f && currentWeight <= targetWeight) {
-            sendSmsNotification("Congratulations! You have reached your target weight of " + targetWeight + " lbs.");
-        }
-    }
-    
-    private void sendSmsNotification(String message) {
-        // Only send if permission is granted
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) 
-                == PackageManager.PERMISSION_GRANTED) {
-            try {
-                SmsManager smsManager;
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-                    smsManager = getSystemService(SmsManager.class);
-                } else {
-                    smsManager = SmsManager.getDefault();
-                }
-                
-                // For demonstration, sending to a dummy number. 
-                String phoneNumber = "5555555555"; 
-                if (smsManager != null) {
-                    smsManager.sendTextMessage(phoneNumber, null, message, null, null);
-                    Toast.makeText(this, "Goal SMS sent!", Toast.LENGTH_SHORT).show();
-                }
-            } catch (Exception e) {
-                Toast.makeText(this, "Failed to send SMS", Toast.LENGTH_SHORT).show();
-            }
+            String message = "Congratulations! You have reached your target weight of " + String.format(Locale.US, "%.1f", targetWeight) + " lbs!";
+            NotificationHelper.sendGoalNotification(this, message);
         }
     }
 }

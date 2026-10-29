@@ -38,8 +38,9 @@ dependencies {
     implementation libs.constraintlayout
     implementation libs.material
     
-    // Google Mobile Ads SDK for AdMob
+    // Google Mobile Ads & Play Billing
     implementation libs.play.services.ads
+    implementation libs.play.billing
     
     testImplementation libs.junit
     androidTestImplementation libs.espresso.core
